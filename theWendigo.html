@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>The Wendigo</title>
+    <script src="bundle.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div class="content">
+      <main>
+        <div id="top">
+        </div>
+        <div id="root">
+        </div>
+      </main>
+
+      <span id="sidebar" class="group">
+      </span>
+
+    </div>
+  </body>
+</html>
+
+<!-- #~ STYLE ~# -->
+
+<style media="screen">
+
+  h1, body, p, input {
+    font-family: monospace;
+    font-family: American Typewriter;
+    color: #fe8;
+    border: inherit;
+    width: inherit;
+    height: inherit;
+  }
+
+  body {
+    background: #332;
+  }
+
+  .group:after {
+    content: "";
+    clear: both;
+    display: block;
+  }
+
+  .content {
+    width: 800px;
+    margin: 0 auto;
+    position: relative;
+    display: block;
+    border-right: 1px solid #c90;
+    border-left: 1px solid #c90;
+    border-top: 1px solid #c90;
+  }
+
+  .book {
+    background: #321;
+    width: 465px;
+    float: left;
+    min-height: 800px;
+    border-right: 1px solid #c90;
+    border-bottom: 1px solid #c90;
+    padding: 8px 16px;
+    line-height: 32px;
+    display: block;
+    margin: 0
+  }
+
+  .top {
+    width: 481px;
+    min-height: 100px;
+    float: left;
+    background: #321;
+    border-right: 1px solid #c90;
+    border-bottom: 1px solid #c90;
+    padding: 8px;
+  }
+
+  .ammo {
+    margin: 22px 0 0 0;
+  }
+
+  .sidebar {
+    width: 286px;
+    padding: 8px;
+    min-height: 917px;
+    background: #321;
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    border-bottom: 1px solid #c90;
+  }
+
+  .what-pane, .who-pane, .where-pane {
+    background: #110;
+    padding: 8px 12px;
+    border-radius: 4px;
+    width: 450px;
+    min-height: 32px;
+    border-top: 1px solid #c90;
+    border-bottom: 1px solid #c90;
+  }
+
+  .who-pane {
+    padding: 8px 12px;
+    min-height: 16px;
+  }
+
+  .what-pane {
+    background: #321;
+    font-size: 16px;
+    padding: 0 12px;
+  }
+
+  .what-pane:hover{
+    background: #110;
+  }
+
+  .what-pane:focus {
+    outline: none;
+    background: #110;
+  }
+
+  .what-submit {
+    opacity: 0;
+  }
+
+
+</style>
