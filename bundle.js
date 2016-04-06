@@ -48,8 +48,8 @@
 	var ReactDOM = __webpack_require__(158);
 	var population = __webpack_require__(159);
 	var Book = __webpack_require__(161);
-	var Sidebar = __webpack_require__(166);
-	var Top = __webpack_require__(167);
+	var Sidebar = __webpack_require__(169);
+	var Top = __webpack_require__(170);
 
 	document.addEventListener('DOMContentLoaded', function () {
 	  ReactDOM.render(React.createElement(Book, null), document.getElementById("root"));
@@ -19788,17 +19788,28 @@
 	  displayName: 'Book',
 
 	  getInitialState: function () {
-	    return { input: "", command: "" };
+	    return { input: "", command: "", player: player };
 	  },
 
 	  handleSubmit: function (e) {
 	    e.preventDefault();
-	    this.updateInput(e);
 	    this.setState({ command: this.state.input });
+	    this.setState({ input: '' });
+	    this.updateInput(e);
 	  },
 
 	  updateInput: function (e) {
 	    this.setState({ input: e.currentTarget.value });
+	  },
+
+	  resetCommand: function () {
+	    if (this.state.command !== "") {
+	      this.setState({ command: "" });
+	    }
+	  },
+
+	  componentDidMount: function () {
+	    this.state.player.callback = this.resetCommand;
 	  },
 
 	  render: function () {
@@ -19808,20 +19819,19 @@
 	      React.createElement(
 	        'div',
 	        { className: 'where-pane' },
-	        player.getContentWhere(this.state.command)
+	        this.state.player.getContentWhere(this.state.command)
 	      ),
-	      React.createElement('br', null),
 	      React.createElement(
 	        'div',
 	        { className: 'who-pane' },
-	        player.getContentWho(this.state.command)
+	        this.state.player.getContentWho(this.state.command)
 	      ),
 	      React.createElement('br', null),
 	      React.createElement(
 	        'form',
 	        { id: 'what-book', onSubmit: this.handleSubmit },
 	        React.createElement('input', {
-	          autofocus: true,
+	          autoComplete: 'off',
 	          id: 'inp',
 	          className: 'what-pane',
 	          onChange: this.updateInput,
@@ -19842,10 +19852,29 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var barroom = __webpack_require__(163);
+	var arsenal = __webpack_require__(160);
+	var index = __webpack_require__(167);
 
 	var player = {
+	  callback: null,
 	  place: barroom,
 	  content: '',
+	  hpInit: 100,
+	  hp: 100,
+	  attacks: { weapons: [arsenal.cursedNambu] },
+	  defense: {
+	    pierce: 0.8,
+	    cut: 0.6,
+	    crush: 0.6,
+	    blast: 0.9,
+	    freeze: 1,
+	    burn: 1,
+	    corrode: 1,
+	    curse: 1.5
+	  },
+	  accuracy: {
+	    "pistol": 0.92
+	  },
 	  getContentWho: function (command) {
 	    if (command[0] === '@') {
 	      this.interact(command);
@@ -19872,10 +19901,13 @@
 	        this.content = noun.dialogue;
 	        break;
 	      case 'Exit':
-	        this.place = noun.leadsto;
+	        if (index[noun.leadsto] && index[noun.leadsto].getNoun) {
+	          this.place = index[noun.leadsto];
+	        }
 	        this.content = '';
 	        break;
 	    }
+	    this.callback();
 	  }
 	};
 
@@ -19885,11 +19917,9 @@
 /* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Place = __webpack_require__(168);
-	var Exit = __webpack_require__(164);
-	var Talker = __webpack_require__(165);
-
-	var hallway = __webpack_require__(169);
+	var Place = __webpack_require__(164);
+	var Exit = __webpack_require__(165);
+	var Talker = __webpack_require__(166);
 
 	var _exit = new Exit({
 	  name: "exit"
@@ -19897,23 +19927,67 @@
 
 	var _stairs = new Exit({
 	  name: "stairs",
-	  leadsto: hallway
+	  leadsto: 'sams/hallway'
 	});
 
-	var _bartender = new Talker({
-	  name: "bartender",
+	var _officers = new Talker({
+	  name: "officers",
+	  dialogue: "CAPT. AXIHUITL: You won't need to worry about whatever's going on out there for much longer. We're workinng on making contact with Fort Hueca. How about you let us get back to work? Just stay inside."
+	});
+
+	var _drunk = new Talker({
+	  name: "drunk",
+	  dialogue: "...no answer."
+	});
+
+	var _innkeeper = new Talker({
+	  name: "innkeeper",
 	  dialogue: "SAM: Hope you been keeping comfortable up in Room 2 there, mister. Don't look like any of us'll be fit to leave town any time soon, way things are going."
 	});
 
 	var barroom = new Place({
-	  description: "The barroom of Sam's Inn in Manquilla. At one end of the room, a BARTENDER stands behind the bar. At the other is the EXIT. On the side wall there is a flight of STAIRS going up.",
-	  features: [_exit, _bartender, _stairs]
+	  description: "The barroom of Sam's Inn in Manquilla. At one end of the room, an INNKEEPER stands behind the bar. At the other is the EXIT. On the side wall there is a flight of STAIRS going up. At one table two army OFFICERS sit in conference, and at another in the corner a DRUNK is resting his head by his glass.",
+	  features: [_exit, _stairs, _innkeeper, _officers, _drunk]
 	});
 
 	module.exports = barroom;
 
 /***/ },
 /* 164 */
+/***/ function(module, exports) {
+
+	var Place = function (params) {
+	  this.name = params.name;
+	  this.features = params.features;
+	  this.description = params.description;
+	};
+
+	Place.prototype.featureNames = function () {
+	  featureNames = [];
+	  this.features.forEach(function (feat) {
+	    featureNames.push(feat.name);
+	  });
+	};
+
+	Place.prototype.getNoun = function (name) {
+	  var returner = null;
+	  this.features.forEach(function (feat) {
+	    if (feat.name === name) {
+	      returner = feat;
+	    }
+	  });
+	  return returner;
+	};
+
+	// var throneRoom = new Place({
+	//   name: "Throne Room",
+	//   features: [throne, exit, visier]
+	// });
+
+	module.exports = Place;
+
+/***/ },
+/* 165 */
 /***/ function(module, exports) {
 
 	var Exit = function (params) {
@@ -19930,7 +20004,7 @@
 	module.exports = Exit;
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports) {
 
 	var Talker = function (params) {
@@ -19951,7 +20025,51 @@
 	module.exports = Talker;
 
 /***/ },
-/* 166 */
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var samsBarroom = __webpack_require__(163);
+	var samsHallway = __webpack_require__(168);
+
+	var placeIndex = {
+	  'sams/barroom': samsBarroom,
+	  'sams/hallway': samsHallway
+	};
+
+	module.exports = placeIndex;
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Place = __webpack_require__(164);
+	var Exit = __webpack_require__(165);
+	var Talker = __webpack_require__(166);
+
+	var _stairs = new Exit({
+	  name: "stairs",
+	  leadsto: 'sams/barroom'
+	});
+
+	var _firstdoor = new Talker({
+	  name: "first door",
+	  dialogue: "There's no answer. It seems to be locked. You can hear a quiet scratching noise inside, like metal on wood."
+	});
+
+	var _thirddoor = new Talker({
+	  name: "third door",
+	  dialogue: "There's no answer. It seems to be locked."
+	});
+
+	var hallway = new Place({
+	  description: "A hallway with no windows. Light shines up from the STAIRS to the barroom below, and from the crack under the FIRST DOOR on the right. Behind the SECOND DOOR and THIRD DOOR is dark.",
+	  features: [_stairs, _firstdoor, _thirddoor]
+	});
+
+	module.exports = hallway;
+
+/***/ },
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -19970,7 +20088,7 @@
 	module.exports = Sidebar;
 
 /***/ },
-/* 167 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -19978,11 +20096,11 @@
 	var population = __webpack_require__(159);
 	var arsenal = __webpack_require__(160);
 
-	var player = population.samHill;
+	var player = __webpack_require__(162);
 
 	var stringifyHP = function (hp) {
 	  var healthBar = "";
-	  for (var i = 0; i < player.hp / 4; i++) {
+	  for (var i = 0; i < hp / 4; i++) {
 	    healthBar += "▓";
 	  }
 	  if (healthBar.length * 4 - hp === 1 || healthBar.length * 4 - hp === 2) {
@@ -20034,61 +20152,6 @@
 	});
 
 	module.exports = Top;
-
-/***/ },
-/* 168 */
-/***/ function(module, exports) {
-
-	var Place = function (params) {
-	  this.name = params.name;
-	  this.features = params.features;
-	  this.description = params.description;
-	};
-
-	Place.prototype.featureNames = function () {
-	  featureNames = [];
-	  this.features.forEach(function (feat) {
-	    featureNames.push(feat.name);
-	  });
-	};
-
-	Place.prototype.getNoun = function (name) {
-	  var returner = null;
-	  this.features.forEach(function (feat) {
-	    if (feat.name === name) {
-	      returner = feat;
-	    }
-	  });
-	  return returner;
-	};
-
-	// var throneRoom = new Place({
-	//   name: "Throne Room",
-	//   features: [throne, exit, visier]
-	// });
-
-	module.exports = Place;
-
-/***/ },
-/* 169 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Place = __webpack_require__(168);
-	var Exit = __webpack_require__(164);
-
-	var barroom = __webpack_require__(163);
-
-	var _stairs = new Exit({
-	  name: "stairs",
-	  leadsto: barroom
-	});
-
-	var barroom = new Place({
-	  description: "A hallway with no windows. Light shines up from the STAIRS to the barroom below, and from the crack under the FIRST DOOR on the right. Behind the SECOND DOOR is dark.",
-	  features: [_stairs]
-	});
-
-	module.exports = barroom;
 
 /***/ }
 /******/ ]);

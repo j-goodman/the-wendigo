@@ -6,33 +6,46 @@ var player = require('../player.js');
 
 var Book = React.createClass({
   getInitialState: function () {
-    return {input: "", command: ""}
+    return {input: "", command: "", player: player}
   },
 
   handleSubmit: function (e) {
     e.preventDefault();
+    this.setState({ command: this.state.input });
+    this.setState({ input: '' });
     this.updateInput(e);
-    this.setState({ command: this.state.input })
   },
 
   updateInput: function(e) {
     this.setState({ input: e.currentTarget.value });
   },
 
+  resetCommand: function() {
+    if (this.state.command !== "") {
+      this.setState({command: ""})
+    }
+  },
+
+  componentDidMount: function () {
+    this.state.player.callback = this.resetCommand;
+  },
+
   render: function () {
-    return <div className="book group">
+    return (<div className="book group">
 
       <div className='where-pane'>
-        {player.getContentWhere(this.state.command)}
+        {this.state.player.getContentWhere(this.state.command)}
       </div>
-      <br />
+
       <div className='who-pane'>
-        {player.getContentWho(this.state.command)}
+        {this.state.player.getContentWho(this.state.command)}
       </div>
+
       <br />
+
       <form id='what-book' onSubmit={this.handleSubmit}>
         <input
-          autofocus
+          autoComplete='off'
           id='inp'
           className='what-pane'
           onChange={this.updateInput}
@@ -41,7 +54,8 @@ var Book = React.createClass({
         ></input>
       <input className='what-submit' type='submit' name=''></input>
       </form>
-    </div>;
+
+    </div>);
   }
 });
 

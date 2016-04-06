@@ -3,11 +3,11 @@ var ReactDOM = require('react-dom');
 var population = require('../fighter.js');
 var arsenal = require('../weapons.js');
 
-var player = population.samHill;
+var player = require('../player.js');
 
 var stringifyHP = function (hp) {
   var healthBar = "";
-  for (var i = 0; i < player.hp/4; i++) {
+  for (var i = 0; i < hp/4; i++) {
     healthBar += "▓";
   }
   if ((healthBar.length)*4 - hp === 1 ||
