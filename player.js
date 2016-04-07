@@ -8,7 +8,8 @@ var player = {
   content: '',
   hpInit: 100,
   hp: 100,
-  attacks: {weapons: [arsenal.cursedNambu]},
+  weapons: [arsenal.cursedNambu],
+  inventory: [],
   defense: {
     pierce: 0.8,
     cut: 0.6,

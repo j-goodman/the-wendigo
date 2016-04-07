@@ -19861,7 +19861,8 @@
 	  content: '',
 	  hpInit: 100,
 	  hp: 100,
-	  attacks: { weapons: [arsenal.cursedNambu] },
+	  weapons: [arsenal.cursedNambu],
+	  inventory: [],
 	  defense: {
 	    pierce: 0.8,
 	    cut: 0.6,
@@ -20126,7 +20127,7 @@
 	  return ammoBar;
 	};
 
-	var ammoBar = stringifyAmmo(player.attacks.weapons[0].ammo);
+	var ammoBar = stringifyAmmo(player.weapons[0].ammo);
 
 	var Top = React.createClass({
 	  displayName: 'Top',
@@ -20143,7 +20144,7 @@
 	      React.createElement(
 	        'div',
 	        { className: 'ammo' },
-	        player.attacks.weapons[0].name,
+	        player.weapons[0].name,
 	        React.createElement('br', null),
 	        ammoBar
 	      )

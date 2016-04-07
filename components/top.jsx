@@ -34,7 +34,7 @@ var stringifyAmmo = function (ammo) {
   return ammoBar;
 };
 
-var ammoBar = stringifyAmmo(player.attacks.weapons[0].ammo);
+var ammoBar = stringifyAmmo(player.weapons[0].ammo);
 
 var Top = React.createClass({
   render: function () {
@@ -43,7 +43,7 @@ var Top = React.createClass({
         {healthBar}
       </div>
       <div className='ammo'>
-        {player.attacks.weapons[0].name}
+        {player.weapons[0].name}
         <br />
         {ammoBar}
       </div>
